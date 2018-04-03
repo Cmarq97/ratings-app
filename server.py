@@ -41,7 +41,7 @@ def register_form():
 
 @app.route("/register", methods=["POST"])
 def register_process():
-    ######## COOOOOODEEEEE
+
     email = request.form.get('email')
     password = request.form.get('password')
     user = User(email=email, password=password)
@@ -52,10 +52,25 @@ def register_process():
 
     return redirect("/")
 
+
 @app.route("/login")
-def login():
+def login_form():
+
     return render_template("login.html")
 
+
+@app.route("/login", methods=['POST'])
+def login():
+    email = request.form.get('email')
+    password = request.form.get('password')
+
+    if db.session.query(User.email == email) and db.session.query(User.password == password):
+        session["user"] = email
+        flash('Logged In')
+        return redirect('/')
+    else:
+        flash('Please register first.')
+        return redirect('/register')
 
 
 if __name__ == "__main__":
