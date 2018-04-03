@@ -7,6 +7,8 @@ from model import connect_to_db, db
 from flask import (Flask, render_template, redirect, request, flash,
                    session)
 from model import User, Rating, Movie, connect_to_db, db
+from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
+
 
 app = Flask(__name__)
 
@@ -64,14 +66,30 @@ def login():
     email = request.form.get('email')
     password = request.form.get('password')
 
-    if db.session.query(User.email == email) and db.session.query(User.password == password):
+    try:
+        user = db.session.query(User).filter(User.email == email).one()
+
+    except NoResultFound:
+        flash('Please register first.')
+        return redirect('/register')
+
+    except MultipleResultsFound:
+        flash('Multiple Accounts With That Email')
+        return redirect('/')
+
+    if user.password == password:
         session["user"] = email
         flash('Logged In')
         return redirect('/')
     else:
-        flash('Please register first.')
-        return redirect('/register')
+        flash('Incorrect Username and/or Password')
+        return redirect('/login')
 
+
+@app.route("/logout")
+def logout():
+    session.pop('user')
+    return redirect('/')
 
 if __name__ == "__main__":
     # We have to set debug=True here, since it has to be True at the
