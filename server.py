@@ -46,7 +46,9 @@ def register_process():
 
     email = request.form.get('email')
     password = request.form.get('password')
-    user = User(email=email, password=password)
+    age = request.form.get('age')
+    zipcode = request.form.get('zipcode')
+    user = User(email=email, password=password, age=age, zipcode=zipcode)
 
     if db.session.query(User.email == email) is not None:
         db.session.add(user)
@@ -80,16 +82,43 @@ def login():
     if user.password == password:
         session["user"] = email
         flash('Logged In')
-        return redirect('/')
+        return redirect('/users/' + str(user.user_id))
     else:
         flash('Incorrect Username and/or Password')
         return redirect('/login')
+
+
+@app.route('/users/<user_id>/')
+def user_profile(user_id):
+    user = db.session.query(User).filter(User.user_id == user_id).one()
+    age = user.age
+    zipcode = user.zipcode
+    ratings = db.session.query(Rating).filter(Rating.user_id == user_id).all()
+
+    return render_template("user_profile.html", age=age, zipcode=zipcode, ratings=ratings)
 
 
 @app.route("/logout")
 def logout():
     session.pop('user')
     return redirect('/')
+
+
+@app.route("/movies")
+def movie_list():
+    """Show list of movies."""
+
+    movies = Movie.query.order_by('title').all()
+    return render_template("movie_list.html", movies=movies)
+
+
+@app.route('/movies/<movie_id>/')
+def movie_profile(movie_id):
+    movie = db.session.query(Movie).filter(Movie.movie_id == movie_id).one()
+    ratings = db.session.query(Rating).filter(Rating.movie_id == movie_id).all()
+
+    return render_template("movie_profile.html", ratings=ratings, movie=movie)
+
 
 if __name__ == "__main__":
     # We have to set debug=True here, since it has to be True at the
@@ -99,7 +128,7 @@ if __name__ == "__main__":
     app.jinja_env.auto_reload = app.debug
 
     connect_to_db(app)
-
+    app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
     # Use the DebugToolbar
     DebugToolbarExtension(app)
 
