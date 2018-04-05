@@ -3,7 +3,19 @@
 
   <h1>{{ movie.title }}</h1>
  
+  <h2>
+    {% if beratement %}
+    <font color="red">
+      {{ beratement }}
+    </font> 
+    {% endif %}
+  </h2>
   <h3>Movie Ratings</h3>
+  <p><b>Average rating:</b> {{ average }}</p>
+  {% if prediction %}
+    <p>We predict you will rate this movie {{ prediction }}.</p>
+  {% endif %}
+  
   <h4>Add a new rating for {{ movie.title }}:</h4>
   <!-- New Form allows user to either add a new rating or update a 
         previous rating for the movie on the page-->
