@@ -37,12 +37,14 @@ def user_list():
 
 @app.route("/register", methods=["GET"])
 def register_form():
+    """Show registration form"""
 
     return render_template("register_form.html")
 
 
 @app.route("/register", methods=["POST"])
 def register_process():
+    """Process registration form"""
 
     email = request.form.get('email')
     password = request.form.get('password')
@@ -59,12 +61,15 @@ def register_process():
 
 @app.route("/login")
 def login_form():
+    """Show login form"""
 
     return render_template("login.html")
 
 
 @app.route("/login", methods=['POST'])
 def login():
+    """Process login form for user to log in"""
+
     email = request.form.get('email')
     password = request.form.get('password')
 
@@ -81,6 +86,7 @@ def login():
 
     if user.password == password:
         session["user"] = email
+        session["user_id"] = user.user_id
         flash('Logged In')
         return redirect('/users/' + str(user.user_id))
     else:
@@ -90,6 +96,8 @@ def login():
 
 @app.route('/users/<user_id>/')
 def user_profile(user_id):
+    """Show user profile page"""
+
     user = db.session.query(User).filter(User.user_id == user_id).one()
     age = user.age
     zipcode = user.zipcode
@@ -100,6 +108,8 @@ def user_profile(user_id):
 
 @app.route("/logout")
 def logout():
+    """Log out user and redirect to home page"""
+
     session.pop('user')
     return redirect('/')
 
@@ -114,10 +124,33 @@ def movie_list():
 
 @app.route('/movies/<movie_id>/')
 def movie_profile(movie_id):
+    """Show movie profile page with movie titles and ratings"""
+
     movie = db.session.query(Movie).filter(Movie.movie_id == movie_id).one()
     ratings = db.session.query(Rating).filter(Rating.movie_id == movie_id).all()
 
     return render_template("movie_profile.html", ratings=ratings, movie=movie)
+
+
+@app.route("/rate_movie", methods=["POST"])
+def rate_movie():
+    """Allows user to rate movie"""
+
+    movie_id = request.form.get('movie_id')
+    user_id = request.form.get('user_id')
+    user_rating = request.form.get('rating')
+
+    if 'user' in session:
+        rating = db.session.query(Rating).filter((Rating.movie_id == movie_id) & (Rating.user_id == user_id)).first()
+        if rating is None:
+            db.session.add(Rating(movie_id=movie_id, user_id=user_id, score=user_rating))
+
+        else:
+            rating.score = int(user_rating)
+
+        db.session.commit()
+
+    return redirect("/movies/" + movie_id)
 
 
 if __name__ == "__main__":

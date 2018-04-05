@@ -54,9 +54,11 @@ class Rating(db.Model):
 
     score = db.Column(db.Integer, nullable=False)
 
+    #Creates relationship between Rating and User allowing for backref ratings
     user = db.relationship("User",
                            backref=db.backref("ratings",
                                               order_by=rating_id))
+    #Creates relationship between Rating and Movie with backref ratings
     movie = db.relationship("Movie",
                             backref=db.backref("ratings",
                                                order_by=rating_id))

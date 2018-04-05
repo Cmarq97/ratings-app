@@ -38,26 +38,28 @@ def load_movies():
     """Load movies from u.item into database."""
 
     print "movies"
-
+    # Delete all rows in table, so if we need to run this a second time,
+    # we won't be trying to add duplicate movies
     Movie.query.delete()
-
+    # Read u.item file and insert data
     for row in open("seed_data/u.item"):
         row = row.rstrip()
-        row = row[:-38]
+        row = row[:-38]  # removing unneeded info which was genres as 0 and 1s
         movie_id, title, released_str, video_release_date, imdb_url = row.split("|")
 
+        #Formatting release date
         if released_str:
             released_at = datetime.datetime.strptime(released_str, "%d-%b-%Y")
         else:
             released_at = None
 
-        title = title[:-7]
+        title = title[:-7]  # removing release year
 
         movie = Movie(movie_id=movie_id, title=title,
                       released_at=released_at, imdb_url=imdb_url)
-
+        # We need to add to the session or it won't ever be stored
         db.session.add(movie)
-
+    # Once we're done, we should commit our work
     db.session.commit()
 
 
@@ -65,16 +67,18 @@ def load_ratings():
     """Load ratings from u.data into database."""
 
     print "ratings"
-
+    # Delete all rows in table, so if we need to run this a second time,
+    # we won't be trying to add duplicate ratings
     Rating.query.delete()
-
+    # Read u.item file and insert data
     for row in open("seed_data/u.data"):
         row = row.rstrip()
         user_id, movie_id, score, timestamp = row.split("\t")
 
         rating = Rating(user_id=user_id, movie_id=movie_id, score=score)
-
+        # We need to add to the session or it won't ever be stored
         db.session.add(rating)
+    # Once we're done, we should commit our work
     db.session.commit()
 
 

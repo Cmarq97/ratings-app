@@ -4,6 +4,7 @@
   <h2>Movies</h2>
 
   <ul>
+    <!-- Lists all movies in movies table and allows each name to be a clickable link leading to the movie details page-->
     {% for movie in movies %}
       <li>
         <a href="/movies/{{ movie.movie_id }}">{{ movie.title }}</a>

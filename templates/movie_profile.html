@@ -4,9 +4,23 @@
   <h1>{{ movie.title }}</h1>
  
   <h3>Movie Ratings</h3>
+  <h4>Add a new rating for {{ movie.title }}:</h4>
+  <!-- New Form allows user to either add a new rating or update a 
+        previous rating for the movie on the page-->
+   {% for num in range(1,6) %}
+   <!-- Creates a button with number corresponding to movie rating 1-5 -->
+    <form action="/rate_movie" method="POST">
+    <!--hidden button types to pass information without being given by user-->
+      <input type="hidden" name="movie_id" value="{{movie.movie_id}}">
+      <input type="hidden" name="user_id" value="{{session['user_id']}}">
+      <input type="submit" name= "rating" value= "{{ num }}">    
+    </form>
+    {% endfor %}
   <ul>
   {% for rating in ratings %}
+  <!-- Displays all ratings for movie on page and includes the user id of the person that gave the rating and their score -->
     <li> <b>User:</b> {{ rating.user_id }} | <b>Score:</b> {{ rating.score }}</li>
+    <!-- blank line for readability -->
     &nbsp;
   {% endfor %}
   </ul>

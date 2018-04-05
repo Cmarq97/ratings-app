@@ -6,6 +6,7 @@
   <p><b>Zipcode:</b> {{ zipcode }}</p>
   <h3>Movie Ratings</h3>
   <ul>
+    <!-- Lists movies the user has rated along with their rating-->
   {% for rating in ratings %}
     <li> <b>Movie Title:</b> {{ rating.movie.title }} | <b>Score:</b> {{ rating.score }}</li>
     &nbsp;

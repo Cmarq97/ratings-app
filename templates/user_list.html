@@ -4,6 +4,7 @@
   <h2>Users</h2>
 
   <ul>
+    <!-- Lists all users with information as a clickable link which will lead to their user page -->
     {% for user in users %}
       <li>
         <a href="/users/{{ user.user_id }}">

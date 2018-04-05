@@ -7,8 +7,17 @@
 <body>
   <h1>Ratings</h1>
   <hr>
+    <h4>
+    <!-- Will display Logged in if a user key is saved in session, otherwise displays not logged in -->
+    {% if 'user' in session %} 
+        Logged in!
+    {% else %}
+        Not logged in!
+    {% endif %}
+    </h4>
   <br>
- <b> {% for message in get_flashed_messages() %}
+  <!-- Will allow for flash messages to be displayed throughout webpages-->
+  <b>{% for message in get_flashed_messages() %}
     {{ message }}
     {% endfor %}</b>
   <hr>
